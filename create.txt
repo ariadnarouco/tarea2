@@ -1,0 +1,31 @@
+#Crear primer contenedor Wiki 
+# se crea con volumen para solución de datos persistente llamado volumen-solucion-web
+# se usa puerto 8080 porque 8081 ya lo tenía utilizado
+docker container run -d --name demo-mediawiki -v volumen-solucion-web:/var/lib/datosWeb  -p 8080:80 mediawiki
+
+#Crear segundo contenedor mysql 
+# se agrega con volumen de datosllamado mediawiki-mysql en /var/lib/mysql/database-data para persistencia de datos
+# BD Se crea con contraseña “secret” usuario root 
+docker container run -d --name demo-mysql -v mediawiki-mysql:/var/lib/mysql/database-data -e MYSQL_ROOT_PASSWORD=secret mysql
+
+#Crear network
+docker network create red-mediawiki
+
+#attachar los contenedores a la red para comunicarse entre si
+docker network connect red-mediawiki demo-mediawiki
+docker network connect red-mediawiki demo-mysql  
+
+#Conectarse a la consola de los contenedores
+# docker exec -it demo-mysql /bin/bash
+
+# La aplicación debe ejecutarse de tal forma que, si nuestra máquina se reinicia, siempre se inicie.
+docker update --restart always demo-mysql
+docker update --restart always demo-mediawiki
+
+#varables de entorno usadas:
+# -e MYSQL_ROOT_PASSWORD=secret : contrasena para la cuenta root es secret
+#-p 8080:80 : Se usa Puerto 80 para la web
+# -v volumen-solucion-web:/var/lib/datosWeb : nombre de carpeta para #la solución Web
+# -v mediawiki-mysql:/var/lib/mysql/database-data: Nombre de volume 
+#para la solucion de BD
+# docker run -d : corre el contenedor en el background

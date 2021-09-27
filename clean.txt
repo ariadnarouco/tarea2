@@ -1,0 +1,14 @@
+#detiene los contenedores
+docker stop demo-mysql
+docker stop demo-mediawiki
+
+#elimina los contenedores
+docker rm demo-mysql  
+docker rm demo-mediawiki
+
+#eliminar los volúmenes
+docker volume rm volumen-solucion-web
+docker volume rm mediawiki-mysql
+
+#elimina la red compartida
+docker network rm  red-mediawiki
